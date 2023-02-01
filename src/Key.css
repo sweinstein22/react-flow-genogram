@@ -1,0 +1,16 @@
+.key {
+  padding: 16px;
+  border: 1px solid black;
+}
+
+ul {
+  padding: 0;
+  margin: 0;
+  list-style-type: none;
+  text-align: left;
+}
+
+.keyTitle {
+  display: flex;
+  justify-content: space-between;
+}

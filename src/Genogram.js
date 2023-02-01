@@ -7,12 +7,11 @@ import ReactFlow, {
   Controls,
 } from "reactflow";
 import elkjs from "elkjs";
+import Key from "./Key";
 import PersonNode from "./PersonNode";
 import "reactflow/dist/style.css";
 
 import { initialNodes, initialEdges } from "./nodes-edges.js";
-
-import "./index.css";
 
 const elk = new elkjs();
 
@@ -65,6 +64,7 @@ const graph = {
 };
 
 const getLayoutedElements = (nodes, edges) => {
+  // Add attributes required by elkjs to nodes and edges
   graph.children = nodes.reduce(
     (memo, node) => [
       ...memo,
@@ -81,6 +81,7 @@ const getLayoutedElements = (nodes, edges) => {
     []
   );
 
+  // Dynamically determine position nodes should be rendered in
   elk.layout(graph).then((positioned) => {
     positioned.children.forEach((node) => {
       // Shift anchor point to center graph
@@ -95,6 +96,8 @@ const getLayoutedElements = (nodes, edges) => {
 
   return {
     nodes: graph.children,
+    // Add in edges that should be rendered but should not impact
+    // dynamic positioning of nodes
     edges: [...graph.edges, ...childFreeMarriageEdges],
   };
 };
@@ -129,6 +132,7 @@ const Genogram = () => {
     >
       <MiniMap />
       <Controls showInteractive={false} />
+      <Key />
     </ReactFlow>
   );
 };
