@@ -1,5 +1,5 @@
 import "./App.css";
-import Genogram from "./Genogram2";
+import Genogram from "./Genogram";
 import React from "react";
 
 const App = () => (

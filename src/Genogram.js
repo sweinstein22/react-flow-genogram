@@ -1,7 +1,23 @@
-import {useMemo} from "react";
-import ReactFlow, {MiniMap, Controls} from "reactflow";
+import React, { useEffect, useMemo } from "react";
+import ReactFlow, {
+  ConnectionLineType,
+  useNodesState,
+  useEdgesState,
+  MiniMap,
+  Controls,
+} from "reactflow";
+import elkjs from "elkjs";
 import PersonNode from "./PersonNode";
 import "reactflow/dist/style.css";
+
+import { initialNodes, initialEdges } from "./nodes-edges.js";
+
+import "./index.css";
+
+const elk = new elkjs();
+
+const nodeWidth = 172;
+const nodeHeight = 36;
 
 // const generateEdgesForDivorcedParents = ({}) => {};
 
@@ -13,51 +29,103 @@ import "reactflow/dist/style.css";
 
 /** Generative way to build this stuff out
  *
- * Child with parents
- *    One parent or two parents
- *    Siblings or no siblings
+ * Every marriage needs to have phantom child if not real one
+ * Add marriage line after dynamic chart determination
  *
- * Person
- *    Married (edge, custom handle)
- *      Status of Marriage (edge styling)
- *    Sibling (edge, custom handle)
+ * 1. Generate list of nodes & edges
+ * 2. Dynamically generate graph
+ * 3. Add in child free marriage lines, divorce lines, etc.
  *
- * Positioning (ugh)
- *    All relative to child?
- *    Maybe need some sort of multiplier, calculated via degrees of separation?
+ * TODO:
+ * - determine data structure required to generate nodes & edges
+ * - figure out how to determine what edges need to be added after dynamic generation
+ * - figure out fictive kin structure/show & hide options?
  */
 
-const nodes = [
-  {id: "1", type: "personNode", position: {x: 0, y: 0}, data: {name: "First Parent"}},
-  {id: "2", type: "personNode", position: {x: 200, y: 0}, data: {name: "Second Parent"}},
-  {id: "3", type: "personNode", position: {x: 20, y: 100}, data: {name: "First Sibling"}},
-  {id: "4", type: "personNode", position: {x: 180, y: 100}, data: {name: "Second Sibling"}},
-  {id: "5", type: "personNode", position: {x: 400, y: 0}, data: {name: "Spouse"}},
+const childFreeMarriageEdges = [
+  {
+    id: "e1-4",
+    source: "3a",
+    target: "3b",
+    sourceHandle: "spouse",
+    targetHandle: "spouse",
+    type: "step",
+  },
 ];
 
-const edges = [
-  // Child/sibling lines
-  {id: "e1-3", source: "1", target: "3", sourceHandle: "parent", targetHandle: "child", type: "step"},
-  {id: "e2-3", source: "2", target: "3", sourceHandle: "parent", targetHandle: "child", type: "step"},
+const graph = {
+  id: "root",
+  children: [],
+  layoutOptions: {
+    "elk.algorithm": "layered",
+    "elk.direction": "DOWN",
+    "elk.layered.spacing.edgeNodeBetweenLayers": 30,
+    "elk.layered.nodePlacement.bk.fixedAlignment": "BALANCED",
+  },
+};
 
-  // Marriage - needs custom handle logic
-  {id: "e2-5", source: "2", target: "5", sourceHandle: "spouse", targetHandle: "spouse", type: "step"},
+const getLayoutedElements = (nodes, edges) => {
+  graph.children = nodes.reduce(
+    (memo, node) => [
+      ...memo,
+      { ...node, width: nodeWidth, height: nodeHeight },
+    ],
+    []
+  );
 
-  // Child/sibling lines
-  {id: "e1-4", source: "1", target: "4", sourceHandle: "parent", targetHandle: "child", type: "step"},
-  {id: "e2-4", source: "2", target: "4", sourceHandle: "parent", targetHandle: "child", type: "step"},
-];
+  graph.edges = edges.reduce(
+    (memo, edge) => [
+      ...memo,
+      { ...edge, sources: [edge.source], targets: [edge.target] },
+    ],
+    []
+  );
+
+  elk.layout(graph).then((positioned) => {
+    positioned.children.forEach((node) => {
+      // Shift anchor point to center graph
+      node.position = {
+        x: node.x - nodeWidth / 2,
+        y: node.y - nodeHeight / 2,
+      };
+
+      return node;
+    });
+  });
+
+  return {
+    nodes: graph.children,
+    edges: [...graph.edges, ...childFreeMarriageEdges],
+  };
+};
 
 const Genogram = () => {
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+
+  const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(
+    () => getLayoutedElements(initialNodes, initialEdges),
+    []
+  );
+
+  useEffect(() => {
+    setNodes(layoutedNodes);
+    setEdges(layoutedEdges);
+  }, [layoutedNodes, layoutedEdges, setNodes, setEdges]);
+
   // const edgeTypes = useMemo(() => ({customEdge: CustomEdge}), []);
-  const nodeTypes = useMemo(() => ({personNode: PersonNode}), []);
+  const nodeTypes = useMemo(() => ({ personNode: PersonNode }), []);
 
   return (
     <ReactFlow
       nodes={nodes}
       edges={edges}
+      onNodesChange={onNodesChange}
+      onEdgesChange={onEdgesChange}
       // edgeTypes={edgeTypes}
       nodeTypes={nodeTypes}
+      connectionLineType={ConnectionLineType.SmoothStep}
+      fitView
     >
       <MiniMap />
       <Controls showInteractive={false} />
@@ -66,4 +134,3 @@ const Genogram = () => {
 };
 
 export default Genogram;
-
