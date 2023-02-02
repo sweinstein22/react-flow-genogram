@@ -11,20 +11,16 @@ import Key from "./Key";
 import PersonNode from "./PersonNode";
 import "reactflow/dist/style.css";
 
-import { initialNodes, initialEdges } from "./nodes-edges.js";
+// Test data trying to leverage only one on one relationship information from the "database"
+import sampleGraphqlNodesAndEdges from "./graphqlAdaptSiblingRelationships/calculateNodesAndEdges";
+
+// Test data without trying to implement any sort of data parsing
+// import hardcodedNodesAndEdges from "./hardcodedNodesAndEdges/calculateNodesAndEdges";
 
 const elk = new elkjs();
 
 const nodeWidth = 172;
 const nodeHeight = 36;
-
-// const generateEdgesForDivorcedParents = ({}) => {};
-
-// const generateEdgesForParents = ({}) => {
-// }
-
-// const generateEdgesForChildlessParents = ({}) => {
-// };
 
 /** Generative way to build this stuff out
  *
@@ -41,17 +37,6 @@ const nodeHeight = 36;
  * - figure out fictive kin structure/show & hide options?
  */
 
-const childFreeMarriageEdges = [
-  {
-    id: "e1-4",
-    source: "3a",
-    target: "3b",
-    sourceHandle: "spouse",
-    targetHandle: "spouse",
-    type: "step",
-  },
-];
-
 const graph = {
   id: "root",
   children: [],
@@ -62,6 +47,9 @@ const graph = {
     "elk.layered.nodePlacement.bk.fixedAlignment": "BALANCED",
   },
 };
+
+const sampleNodesAndEdges = sampleGraphqlNodesAndEdges();
+// const sampleNodesAndEdges = hardcodedNodesAndEdges();
 
 const getLayoutedElements = (nodes, edges) => {
   // Add attributes required by elkjs to nodes and edges
@@ -98,7 +86,7 @@ const getLayoutedElements = (nodes, edges) => {
     nodes: graph.children,
     // Add in edges that should be rendered but should not impact
     // dynamic positioning of nodes
-    edges: [...graph.edges, ...childFreeMarriageEdges],
+    edges: [...graph.edges, ...sampleNodesAndEdges.staticEdges],
   };
 };
 
@@ -107,7 +95,11 @@ const Genogram = () => {
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(
-    () => getLayoutedElements(initialNodes, initialEdges),
+    () =>
+      getLayoutedElements(
+        sampleNodesAndEdges.nodes,
+        sampleNodesAndEdges.dynamicEdges
+      ),
     []
   );
 

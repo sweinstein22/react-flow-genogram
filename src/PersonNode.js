@@ -20,31 +20,13 @@ const CustomHandle = ({ id, position }) => (
   </Fragment>
 );
 
-const SpouseHandles = ({ id }) => (
-  <Fragment>
-    <Handle
-      style={{ background: "none", border: "none" }}
-      isConnectable={false}
-      type="source"
-      position={Position.Bottom}
-      id="spouse"
-    />
-    <Handle
-      style={{ background: "none", border: "none" }}
-      isConnectable={false}
-      type="target"
-      position={Position.Bottom}
-      id="spouse"
-    />
-  </Fragment>
-);
-
 const PersonNode = ({ data: { name } }) => {
   return (
     <Fragment>
       <CustomHandle id="child" position={Position.Top} />
+      <CustomHandle id="sibling" position={Position.Top} />
       <CustomHandle id="parent" position={Position.Bottom} />
-      <SpouseHandles />
+      <CustomHandle id="partner" position={Position.Bottom} />
       <div
         style={{
           border: "1px solid black",

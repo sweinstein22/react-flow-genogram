@@ -82,6 +82,22 @@ export const initialNodes = [
     position,
   },
   { id: "7", type: "personNode", data: { name: "output" }, position },
+  { id: "8", type: "personNode", data: { name: "output" }, position },
+  {
+    id: "9",
+    hidden: true,
+    type: "personNode",
+    data: { name: "output" },
+    position,
+  },
+  {
+    id: "10",
+    type: "personNode",
+    data: { name: "fictive kin" },
+    position,
+  },
+  { id: "11", type: "personNode", data: { name: "fictive kin" }, position },
+  { id: "12", type: "personNode", data: { name: "fictive kin" }, position },
 ];
 
 export const initialEdges = [
@@ -204,5 +220,45 @@ export const initialEdges = [
     sourceHandle: "parent",
     targetHandle: "child",
     type: edgeType,
+  },
+  {
+    id: "e79",
+    source: "7",
+    target: "9",
+    sourceHandle: "parent",
+    targetHandle: "child",
+    type: edgeType,
+  },
+  {
+    id: "e89",
+    source: "8",
+    target: "9",
+    sourceHandle: "parent",
+    targetHandle: "child",
+    type: edgeType,
+  },
+  {
+    id: "e108",
+    source: "8",
+    target: "10",
+    sourceHandle: "parent",
+    targetHandle: "child",
+    type: "straight",
+  },
+  {
+    id: "e118",
+    source: "8",
+    target: "11",
+    sourceHandle: "parent",
+    targetHandle: "child",
+    type: "straight",
+  },
+  {
+    id: "e128",
+    source: "8",
+    target: "12",
+    sourceHandle: "parent",
+    targetHandle: "child",
+    type: "straight",
   },
 ];
