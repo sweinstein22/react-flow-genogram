@@ -1,3 +1,4 @@
+import ElkJS from "elkjs";
 import React, { useEffect, useMemo } from "react";
 import ReactFlow, {
   ConnectionLineType,
@@ -6,7 +7,6 @@ import ReactFlow, {
   MiniMap,
   Controls,
 } from "reactflow";
-import elkjs from "elkjs";
 import Key from "./Key";
 import PersonNode from "./PersonNode";
 import "reactflow/dist/style.css";
@@ -17,7 +17,7 @@ import sampleGraphqlNodesAndEdges from "./graphqlAdaptSiblingRelationships/calcu
 // Test data without trying to implement any sort of data parsing
 // import hardcodedNodesAndEdges from "./hardcodedNodesAndEdges/calculateNodesAndEdges";
 
-const elk = new elkjs();
+const elk = new ElkJS();
 
 const nodeWidth = 172;
 const nodeHeight = 36;
@@ -51,7 +51,7 @@ const graph = {
 const sampleNodesAndEdges = sampleGraphqlNodesAndEdges();
 // const sampleNodesAndEdges = hardcodedNodesAndEdges();
 
-const getLayoutedElements = (nodes, edges) => {
+const getLayoutedElements = async (nodes, edges) => {
   // Add attributes required by elkjs to nodes and edges
   graph.children = nodes.reduce(
     (memo, node) => [
@@ -70,15 +70,15 @@ const getLayoutedElements = (nodes, edges) => {
   );
 
   // Dynamically determine position nodes should be rendered in
-  elk.layout(graph).then((positioned) => {
-    positioned.children.forEach((node) => {
+  await elk.layout(graph).then((layoutedGraph) => {
+    layoutedGraph.children.map((node) => {
+      const shiftedNode = node;
       // Shift anchor point to center graph
-      node.position = {
+      shiftedNode.position = {
         x: node.x - nodeWidth / 2,
         y: node.y - nodeHeight / 2,
       };
-
-      return node;
+      return shiftedNode;
     });
   });
 
@@ -94,19 +94,19 @@ const Genogram = () => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
-  const { nodes: layoutedNodes, edges: layoutedEdges } = useMemo(
-    () =>
-      getLayoutedElements(
-        sampleNodesAndEdges.nodes,
-        sampleNodesAndEdges.dynamicEdges
-      ),
-    []
-  );
-
   useEffect(() => {
-    setNodes(layoutedNodes);
-    setEdges(layoutedEdges);
-  }, [layoutedNodes, layoutedEdges, setNodes, setEdges]);
+    const layoutElements = async () => {
+      const { nodes: layoutedNodes, edges: layoutedEdges } =
+        await getLayoutedElements(
+          sampleNodesAndEdges.nodes,
+          sampleNodesAndEdges.dynamicEdges
+        );
+      setNodes(layoutedNodes);
+      setEdges(layoutedEdges);
+    };
+
+    layoutElements();
+  }, [setNodes, setEdges]);
 
   // const edgeTypes = useMemo(() => ({customEdge: CustomEdge}), []);
   const nodeTypes = useMemo(() => ({ personNode: PersonNode }), []);
