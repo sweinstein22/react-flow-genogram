@@ -1,5 +1,12 @@
 export const sampleGraphqlHumanRelationshipResponse = [
   {
+    humanId1: "0",
+    humanId2: "1",
+    relationship: "siblings",
+    emotionalRelationship: "estranged",
+    id: "r0",
+  },
+  {
     humanId1: "1",
     humanId2: "2",
     relationship: "parent-child",
@@ -57,6 +64,7 @@ export const sampleGraphqlHumanRelationshipResponse = [
 ];
 
 export const sampleGraphqlHumanResponse = {
+  0: { name: 0 },
   1: { name: 1 },
   2: { name: 2 },
   3: { name: 3 },

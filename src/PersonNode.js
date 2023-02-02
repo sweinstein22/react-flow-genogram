@@ -20,7 +20,7 @@ const CustomHandle = ({ id, position }) => (
   </Fragment>
 );
 
-const PersonNode = ({ data: { name } }) => {
+const PersonNode = ({ data: { name = "" } }) => {
   return (
     <Fragment>
       <CustomHandle id="child" position={Position.Top} />
