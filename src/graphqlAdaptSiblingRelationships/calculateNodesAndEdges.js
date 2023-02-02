@@ -11,6 +11,7 @@ const parseGraphqlData = (data) => {
   const parentChildRelationships = {};
   const partnerRelationships = {};
   const siblingRelationships = {};
+  const fictiveKinRelationships = {};
 
   data.forEach(({ humanId1, humanId2, relationship, ...rest }) => {
     // Parent Child Relationship
@@ -57,12 +58,31 @@ const parseGraphqlData = (data) => {
         };
       }
     }
+    // Fictive Kin Relationship
+    else if (relationship === "fictive-kin") {
+      // confirm that there isn't an existing permutation of the relationship represented yet
+      // if we have good data this shouldn't be a problem, but better to safeguard!
+      if (
+        !(
+          fictiveKinRelationships[`${humanId1}-${humanId2}`] ||
+          fictiveKinRelationships[`${humanId2}-${humanId1}`]
+        )
+      ) {
+        fictiveKinRelationships[`${humanId1}-${humanId2}`] = {
+          humanId1,
+          humanId2,
+          relationship,
+          ...rest,
+        };
+      }
+    }
   });
 
   return {
     parentChildRelationships,
     partnerRelationships,
     siblingRelationships,
+    fictiveKinRelationships,
   };
 };
 
@@ -70,6 +90,7 @@ const generateNodesAndEdges = ({
   parentChildRelationships,
   partnerRelationships,
   siblingRelationships,
+  fictiveKinRelationships,
 }) => {
   const nodesById = {};
   const edgesToGenerateDynamically = {};
@@ -107,12 +128,12 @@ const generateNodesAndEdges = ({
 
     addNode({ id: phantomNodeId, hidden: true });
     addParentChildEdge({
-      edgeId: `${edgeId}-phantomNode1`,
+      edgeId: `e${edgeId}-phantomNode1`,
       [phantomIdLabel]: phantomNodeId,
       [existingIdLabel]: humanId1,
     });
     addParentChildEdge({
-      edgeId: `${edgeId}-phantomNode2`,
+      edgeId: `e${edgeId}-phantomNode2`,
       [phantomIdLabel]: phantomNodeId,
       [existingIdLabel]: humanId2,
     });
@@ -124,6 +145,17 @@ const generateNodesAndEdges = ({
       sourceHandle: edgeRelationship,
       targetHandle: edgeRelationship,
       type: "step",
+    };
+  };
+
+  const addFictiveKinEdge = ({ edgeId, humanId1, humanId2 }) => {
+    edgesToGenerateDynamically[edgeId] = {
+      id: edgeId,
+      source: humanId1,
+      target: humanId2,
+      sourceHandle: "fictive-kin",
+      targetHandle: "fictive-kin",
+      type: "straight",
     };
   };
 
@@ -162,7 +194,7 @@ const generateNodesAndEdges = ({
         ({ childId }) => childId
       );
       const noSharedChildren = isEmpty(
-        parentChildRelationships[humanId1].filter(({ childId }) =>
+        (parentChildRelationships[humanId1] || []).filter(({ childId }) =>
           human2ChildIds.includes(childId)
         )
       );
@@ -186,6 +218,17 @@ const generateNodesAndEdges = ({
     if (!(human1IsChild && human2IsChild)) {
       addPhantomRelationship({ humanId1, humanId2, phantomParent: true });
     }
+  });
+
+  // Generate Nodes and Edges for Fictive Kin Relationships
+  Object.values(fictiveKinRelationships).forEach(({ humanId1, humanId2 }) => {
+    addNode({ id: humanId1 });
+    addNode({ id: humanId2 });
+    addFictiveKinEdge({
+      edgeId: `e${humanId1}-${humanId2}`,
+      humanId1,
+      humanId2,
+    });
   });
 
   return {

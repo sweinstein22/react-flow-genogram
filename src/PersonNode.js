@@ -20,6 +20,25 @@ const CustomHandle = ({ id, position }) => (
   </Fragment>
 );
 
+const FictiveKinHandle = () => (
+  <Fragment>
+    <Handle
+      style={{ background: "none", border: "none" }}
+      isConnectable={false}
+      type="source"
+      position={Position.Bottom}
+      id="fictive-kin"
+    />
+    <Handle
+      style={{ background: "none", border: "none" }}
+      isConnectable={false}
+      type="target"
+      position={Position.Top}
+      id="fictive-kin"
+    />
+  </Fragment>
+);
+
 const PersonNode = ({ data: { name = "" } }) => {
   return (
     <Fragment>
@@ -27,6 +46,7 @@ const PersonNode = ({ data: { name = "" } }) => {
       <CustomHandle id="sibling" position={Position.Top} />
       <CustomHandle id="parent" position={Position.Bottom} />
       <CustomHandle id="partner" position={Position.Bottom} />
+      <FictiveKinHandle />
       <div
         style={{
           border: "1px solid black",
