@@ -102,7 +102,7 @@ const generateNodesAndEdges = ({
         id: id,
         hidden,
         type: "personNode",
-        data: sampleGraphqlHumanResponse[id] || {},
+        data: sampleGraphqlHumanResponse[id],
         position: { x: 0, y: 0 },
       };
     }

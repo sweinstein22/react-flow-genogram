@@ -1,5 +1,6 @@
 import { Handle, Position } from "reactflow";
 import { Fragment } from "react";
+import PersonCard from "./PersonCard";
 
 const CustomHandle = ({ id, position }) => (
   <Fragment>
@@ -39,7 +40,7 @@ const FictiveKinHandle = () => (
   </Fragment>
 );
 
-const PersonNode = ({ data: { name = "" } }) => {
+const PersonNode = (props) => {
   return (
     <Fragment>
       <CustomHandle id="child" position={Position.Top} />
@@ -47,15 +48,7 @@ const PersonNode = ({ data: { name = "" } }) => {
       <CustomHandle id="parent" position={Position.Bottom} />
       <CustomHandle id="partner" position={Position.Bottom} />
       <FictiveKinHandle />
-      <div
-        style={{
-          border: "1px solid black",
-          borderRadius: "4px",
-          padding: "8px",
-        }}
-      >
-        Name: {name}
-      </div>
+      <PersonCard {...props} />
     </Fragment>
   );
 };
