@@ -9,6 +9,7 @@ import { isEmpty } from "lodash";
 const parseGraphqlData = (data) => {
   const partnerRelationshipStatuses = ["married", "divorced", "partners"];
   const parentChildRelationships = {};
+  const grandparentChildRelationships = {};
   const partnerRelationships = {};
   const siblingRelationships = {};
   const fictiveKinRelationships = {};
@@ -20,6 +21,14 @@ const parseGraphqlData = (data) => {
       parentChildRelationships[humanId1] = [
         ...currentChildren,
         { parentId: humanId1, childId: humanId2, ...rest },
+      ];
+    }
+    // Grandparent Child Relationships
+    if (relationship === "grandparent-child") {
+      const currentChildren = grandparentChildRelationships[humanId1] || [];
+      grandparentChildRelationships[humanId1] = [
+        ...currentChildren,
+        { grandparentId: humanId1, childId: humanId2, ...rest },
       ];
     }
     // Partner Relationship
@@ -80,6 +89,7 @@ const parseGraphqlData = (data) => {
 
   return {
     parentChildRelationships,
+    grandparentChildRelationships,
     partnerRelationships,
     siblingRelationships,
     fictiveKinRelationships,
@@ -88,6 +98,7 @@ const parseGraphqlData = (data) => {
 
 const generateNodesAndEdges = ({
   parentChildRelationships,
+  grandparentChildRelationships,
   partnerRelationships,
   siblingRelationships,
   fictiveKinRelationships,
@@ -119,7 +130,11 @@ const generateNodesAndEdges = ({
     };
   };
 
-  const addPhantomRelationship = ({ humanId1, humanId2, phantomParent }) => {
+  const addPhantomSameGenerationRelationship = ({
+    humanId1,
+    humanId2,
+    phantomParent,
+  }) => {
     const phantomNodeId = `${humanId1}-${humanId2}-phantomNode`;
     const edgeId = `e${humanId1}-${humanId2}`;
     const phantomIdLabel = phantomParent ? "parentId" : "childId";
@@ -148,6 +163,32 @@ const generateNodesAndEdges = ({
     };
   };
 
+  const addPhantomCrossGenerationRelationship = ({ humanId1, humanId2 }) => {
+    const phantomNodeId = `${humanId1}-${humanId2}-phantomNode`;
+    const edgeId = `e${humanId1}-${humanId2}`;
+
+    addNode({ id: phantomNodeId, hidden: true });
+    addParentChildEdge({
+      edgeId: `e${edgeId}-phantomNode1`,
+      parentId: humanId1,
+      childId: phantomNodeId,
+    });
+    addParentChildEdge({
+      edgeId: `e${edgeId}-phantomNode2`,
+      parentId: phantomNodeId,
+      childId: humanId2,
+    });
+
+    edgesToAddAfterDynamicGeneration[edgeId] = {
+      id: edgeId,
+      source: humanId1,
+      target: humanId2,
+      sourceHandle: "parent",
+      targetHandle: "child",
+      type: "step",
+    };
+  };
+
   const addFictiveKinEdge = ({ edgeId, humanId1, humanId2, label }) => {
     edgesToGenerateDynamically[edgeId] = {
       id: edgeId,
@@ -170,6 +211,20 @@ const generateNodesAndEdges = ({
       // Add kinship edge between parent and child
       const edgeId = `e${parentId}-${childId}`;
       addParentChildEdge({ edgeId, parentId, childId });
+    });
+  });
+
+  // Generate Nodes and Edges for Grandparent/Child Relationships
+  Object.values(grandparentChildRelationships).forEach((children) => {
+    children.forEach(({ grandparentId, childId, status }) => {
+      // Add nodes for humans
+      addNode({ id: grandparentId });
+      addNode({ id: childId });
+      // Add node for phantom center-generation person
+      addPhantomCrossGenerationRelationship({
+        humanId1: grandparentId,
+        humanId2: childId,
+      });
     });
   });
 
@@ -203,7 +258,19 @@ const generateNodesAndEdges = ({
       // Add phantom child and add partner edge between the two
       // humans as a static node
       if (childFreeAdult || noSharedChildren) {
-        addPhantomRelationship({ humanId1, humanId2 });
+        addPhantomSameGenerationRelationship({ humanId1, humanId2 });
+
+        const edgeId = `e${humanId1}-${humanId2}`;
+        edgesToAddAfterDynamicGeneration[edgeId] = {
+          id: edgeId,
+          source: humanId1,
+          target: humanId2,
+          sourceHandle: "partner",
+          targetHandle: "partner",
+          type: "step",
+          // type: "customEdge",
+          data: { withChildren: true },
+        };
       }
     }
   );
@@ -217,7 +284,11 @@ const generateNodesAndEdges = ({
     if (!human1IsChild) addNode({ id: humanId1 });
     if (!human2IsChild) addNode({ id: humanId2 });
     if (!(human1IsChild && human2IsChild)) {
-      addPhantomRelationship({ humanId1, humanId2, phantomParent: true });
+      addPhantomSameGenerationRelationship({
+        humanId1,
+        humanId2,
+        phantomParent: true,
+      });
     }
   });
 
