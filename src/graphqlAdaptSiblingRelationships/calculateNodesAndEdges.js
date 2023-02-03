@@ -148,7 +148,7 @@ const generateNodesAndEdges = ({
     };
   };
 
-  const addFictiveKinEdge = ({ edgeId, humanId1, humanId2 }) => {
+  const addFictiveKinEdge = ({ edgeId, humanId1, humanId2, label }) => {
     edgesToGenerateDynamically[edgeId] = {
       id: edgeId,
       source: humanId1,
@@ -156,6 +156,7 @@ const generateNodesAndEdges = ({
       sourceHandle: "fictive-kin",
       targetHandle: "fictive-kin",
       type: "straight",
+      label,
     };
   };
 
@@ -221,15 +222,18 @@ const generateNodesAndEdges = ({
   });
 
   // Generate Nodes and Edges for Fictive Kin Relationships
-  Object.values(fictiveKinRelationships).forEach(({ humanId1, humanId2 }) => {
-    addNode({ id: humanId1 });
-    addNode({ id: humanId2 });
-    addFictiveKinEdge({
-      edgeId: `e${humanId1}-${humanId2}`,
-      humanId1,
-      humanId2,
-    });
-  });
+  Object.values(fictiveKinRelationships).forEach(
+    ({ humanId1, humanId2, label }) => {
+      addNode({ id: humanId1 });
+      addNode({ id: humanId2 });
+      addFictiveKinEdge({
+        edgeId: `e${humanId1}-${humanId2}`,
+        humanId1,
+        humanId2,
+        label,
+      });
+    }
+  );
 
   return {
     nodes: Object.values(nodesById),

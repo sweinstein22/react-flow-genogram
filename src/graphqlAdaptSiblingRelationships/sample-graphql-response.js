@@ -62,28 +62,38 @@ export const sampleGraphqlHumanRelationshipResponse = [
     id: "r9",
   },
   {
+    humanId1: "6",
+    humanId2: "16",
+    relationship: "partners",
+    id: "r16",
+  },
+  {
     humanId1: "8",
     humanId2: "10",
     relationship: "fictive-kin",
     id: "r10",
+    label: "Therapist",
   },
   {
     humanId1: "8",
     humanId2: "11",
     relationship: "fictive-kin",
     id: "r11",
+    label: "CASA",
   },
   {
     humanId1: "8",
     humanId2: "12",
     relationship: "fictive-kin",
     id: "r12",
+    label: "Foster Parent",
   },
   {
     humanId1: "8",
     humanId2: "13",
     relationship: "fictive-kin",
     id: "r13",
+    label: "Resource Family",
   },
   {
     humanId1: "13",
@@ -96,6 +106,7 @@ export const sampleGraphqlHumanRelationshipResponse = [
     humanId2: "14",
     relationship: "fictive-kin",
     id: "r15",
+    label: "Legal Guardian",
   },
 ];
 
@@ -116,6 +127,7 @@ export const sampleGraphqlHumanResponse = {
   13: { name: 13 },
   14: { name: 14 },
   15: { name: 15 },
+  16: { name: 16 },
 };
 
 export const sampleResponse = () => {};
