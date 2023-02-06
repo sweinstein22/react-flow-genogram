@@ -5,96 +5,7 @@ import {
   sampleGraphqlHumanResponse,
 } from "./sample-graphql-response.js";
 import { isEmpty } from "lodash";
-
-const parseGraphqlData = (data) => {
-  const partnerRelationshipStatuses = ["married", "divorced", "partners"];
-  const parentChildRelationships = {};
-  const grandparentChildRelationships = {};
-  const partnerRelationships = {};
-  const siblingRelationships = {};
-  const fictiveKinRelationships = {};
-
-  data.forEach(({ humanId1, humanId2, relationship, ...rest }) => {
-    // Parent Child Relationship
-    if (relationship === "parent-child") {
-      const currentChildren = parentChildRelationships[humanId1] || [];
-      parentChildRelationships[humanId1] = [
-        ...currentChildren,
-        { parentId: humanId1, childId: humanId2, ...rest },
-      ];
-    }
-    // Grandparent Child Relationships
-    if (relationship === "grandparent-child") {
-      const currentChildren = grandparentChildRelationships[humanId1] || [];
-      grandparentChildRelationships[humanId1] = [
-        ...currentChildren,
-        { grandparentId: humanId1, childId: humanId2, ...rest },
-      ];
-    }
-    // Partner Relationship
-    else if (partnerRelationshipStatuses.includes(relationship)) {
-      // confirm that there isn't an existing permutation of the relationship represented yet
-      // if we have good data this shouldn't be a problem, but better to safeguard!
-      if (
-        !(
-          partnerRelationships[`${humanId1}-${humanId2}`] ||
-          partnerRelationships[`${humanId2}-${humanId1}`]
-        )
-      ) {
-        partnerRelationships[`${humanId1}-${humanId2}`] = {
-          humanId1,
-          humanId2,
-          relationship,
-          ...rest,
-        };
-      }
-    }
-    // Sibling Relationship
-    else if (relationship === "siblings") {
-      // confirm that there isn't an existing permutation of the relationship represented yet
-      // if we have good data this shouldn't be a problem, but better to safeguard!
-      if (
-        !(
-          siblingRelationships[`${humanId1}-${humanId2}`] ||
-          siblingRelationships[`${humanId2}-${humanId1}`]
-        )
-      ) {
-        siblingRelationships[`${humanId1}-${humanId2}`] = {
-          humanId1,
-          humanId2,
-          relationship,
-          ...rest,
-        };
-      }
-    }
-    // Fictive Kin Relationship
-    else if (relationship === "fictive-kin") {
-      // confirm that there isn't an existing permutation of the relationship represented yet
-      // if we have good data this shouldn't be a problem, but better to safeguard!
-      if (
-        !(
-          fictiveKinRelationships[`${humanId1}-${humanId2}`] ||
-          fictiveKinRelationships[`${humanId2}-${humanId1}`]
-        )
-      ) {
-        fictiveKinRelationships[`${humanId1}-${humanId2}`] = {
-          humanId1,
-          humanId2,
-          relationship,
-          ...rest,
-        };
-      }
-    }
-  });
-
-  return {
-    parentChildRelationships,
-    grandparentChildRelationships,
-    partnerRelationships,
-    siblingRelationships,
-    fictiveKinRelationships,
-  };
-};
+import parseGraphqlData from "./parseGraphqlData.js";
 
 const generateNodesAndEdges = ({
   parentChildRelationships,
@@ -104,8 +15,8 @@ const generateNodesAndEdges = ({
   fictiveKinRelationships,
 }) => {
   const nodesById = {};
-  const edgesToGenerateDynamically = {};
-  const edgesToAddAfterDynamicGeneration = {};
+  const dynamicEdges = {};
+  const staticEdges = {};
 
   const addNode = ({ id, hidden }) => {
     if (!nodesById[id]) {
@@ -120,7 +31,7 @@ const generateNodesAndEdges = ({
   };
 
   const addParentChildEdge = ({ edgeId, parentId, childId }) => {
-    edgesToGenerateDynamically[edgeId] = {
+    dynamicEdges[edgeId] = {
       id: edgeId,
       source: parentId,
       target: childId,
@@ -153,7 +64,7 @@ const generateNodesAndEdges = ({
       [existingIdLabel]: humanId2,
     });
 
-    edgesToAddAfterDynamicGeneration[edgeId] = {
+    staticEdges[edgeId] = {
       id: edgeId,
       source: humanId1,
       target: humanId2,
@@ -179,7 +90,7 @@ const generateNodesAndEdges = ({
       childId: humanId2,
     });
 
-    edgesToAddAfterDynamicGeneration[edgeId] = {
+    staticEdges[edgeId] = {
       id: edgeId,
       source: humanId1,
       target: humanId2,
@@ -190,7 +101,7 @@ const generateNodesAndEdges = ({
   };
 
   const addFictiveKinEdge = ({ edgeId, humanId1, humanId2, label }) => {
-    edgesToGenerateDynamically[edgeId] = {
+    dynamicEdges[edgeId] = {
       id: edgeId,
       source: humanId1,
       target: humanId2,
@@ -261,7 +172,7 @@ const generateNodesAndEdges = ({
         addPhantomSameGenerationRelationship({ humanId1, humanId2 });
 
         const edgeId = `e${humanId1}-${humanId2}`;
-        edgesToAddAfterDynamicGeneration[edgeId] = {
+        staticEdges[edgeId] = {
           id: edgeId,
           source: humanId1,
           target: humanId2,
@@ -308,8 +219,8 @@ const generateNodesAndEdges = ({
 
   return {
     nodes: Object.values(nodesById),
-    dynamicEdges: Object.values(edgesToGenerateDynamically),
-    staticEdges: Object.values(edgesToAddAfterDynamicGeneration),
+    dynamicEdges: Object.values(dynamicEdges),
+    staticEdges: Object.values(staticEdges),
   };
 };
 

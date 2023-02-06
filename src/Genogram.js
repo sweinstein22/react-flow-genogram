@@ -1,7 +1,6 @@
 import ElkJS from "elkjs";
 import React, { useEffect, useMemo } from "react";
 import ReactFlow, {
-  ConnectionLineType,
   useNodesState,
   useEdgesState,
   MiniMap,
@@ -119,7 +118,6 @@ const Genogram = () => {
       onEdgesChange={onEdgesChange}
       // edgeTypes={edgeTypes}
       nodeTypes={nodeTypes}
-      connectionLineType={ConnectionLineType.SmoothStep}
       fitView
     >
       <MiniMap />
