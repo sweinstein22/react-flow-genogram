@@ -7,6 +7,8 @@ import {
 import { isEmpty } from "lodash";
 import parseGraphqlData from "./parseGraphqlData.js";
 
+import addFictiveKinEdge from "../edgeUtils/addFictiveKinEdge.js";
+
 const generateNodesAndEdges = ({
   parentChildRelationships,
   grandparentChildRelationships,
@@ -97,18 +99,6 @@ const generateNodesAndEdges = ({
       sourceHandle: "parent",
       targetHandle: "child",
       type: "step",
-    };
-  };
-
-  const addFictiveKinEdge = ({ edgeId, humanId1, humanId2, label }) => {
-    dynamicEdges[edgeId] = {
-      id: edgeId,
-      source: humanId1,
-      target: humanId2,
-      sourceHandle: "fictive-kin",
-      targetHandle: "fictive-kin",
-      type: "straight",
-      label,
     };
   };
 
@@ -206,8 +196,10 @@ const generateNodesAndEdges = ({
     ({ humanId1, humanId2, label }) => {
       addNode({ id: humanId1 });
       addNode({ id: humanId2 });
-      addFictiveKinEdge({
-        edgeId: `e${humanId1}-${humanId2}`,
+
+      const edgeId = `e${humanId1}-${humanId2}`;
+      dynamicEdges[edgeId] = addFictiveKinEdge({
+        edgeId,
         humanId1,
         humanId2,
         label,

@@ -7,8 +7,9 @@ import ReactFlow, {
   Controls,
 } from "reactflow";
 import Key from "./Key";
-import PersonNode from "./PersonNode";
+import PersonNode from "./nodes/PersonNode";
 import "reactflow/dist/style.css";
+import processDynamicNodes from "./graphqlAdaptSiblingRelationships/processDynamicNodes";
 
 // Test data trying to leverage only one on one relationship information from the "database"
 import sampleGraphqlNodesAndEdges from "./graphqlAdaptSiblingRelationships/calculateNodesAndEdges";
