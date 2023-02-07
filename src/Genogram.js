@@ -9,9 +9,14 @@ import ReactFlow, {
 import Key from "./Key";
 import PersonNode from "./PersonNode";
 import "reactflow/dist/style.css";
+import { SmartStepEdge } from "@tisoap/react-flow-smart-edge";
 
 // Test data trying to leverage only one on one relationship information from the "database"
-import sampleGraphqlNodesAndEdges from "./graphqlAdaptSiblingRelationships/calculateNodesAndEdges";
+import sampleGraphqlNodesAndEdges from "./graphqlAdaptSiblingRelationships/calculateNodesAndEdges2";
+import LiftedTargetPositionEdge from "./edges/LiftedTargetPositionEdge";
+import FloatingEdge from "./edges/FloatingEdge";
+import ConnectorNode from "./ConnectorNode";
+import DivorcedEdge from "./edges/DivorcedEdge";
 
 // Test data without trying to implement any sort of data parsing
 // import hardcodedNodesAndEdges from "./hardcodedNodesAndEdges/calculateNodesAndEdges";
@@ -42,7 +47,7 @@ const graph = {
   layoutOptions: {
     "elk.algorithm": "layered",
     "elk.direction": "DOWN",
-    "elk.layered.spacing.edgeNodeBetweenLayers": 30,
+    "elk.layered.spacing.edgeNodeBetweenLayers": 15,
     "elk.layered.nodePlacement.bk.fixedAlignment": "BALANCED",
   },
 };
@@ -79,6 +84,25 @@ const getLayoutedElements = async (nodes, edges) => {
       };
       return shiftedNode;
     });
+
+    // const nodesById = {};
+    // layoutedGraph.children.forEach(
+    //   ({ id, ...rest }) => (nodesById[id] = { id, ...rest })
+    // );
+    // graph.edges = layoutedGraph.edges.map(
+    //   ({ source, target, data, ...rest }) => {
+    //     return {
+    //       source,
+    //       target,
+    //       data: {
+    //         ...data,
+    //         sourceNodePosition: nodesById[source].position,
+    //         targetNodePosition: nodesById[target].position,
+    //       },
+    //       ...rest,
+    //     };
+    //   }
+    // );
   });
 
   return {
@@ -107,8 +131,17 @@ const Genogram = () => {
     layoutElements();
   }, [setNodes, setEdges]);
 
-  // const edgeTypes = useMemo(() => ({customEdge: CustomEdge}), []);
-  const nodeTypes = useMemo(() => ({ personNode: PersonNode }), []);
+  const edgeTypes = useMemo(
+    () => ({
+      divorced: DivorcedEdge,
+      liftedTarget: LiftedTargetPositionEdge,
+    }),
+    []
+  );
+  const nodeTypes = useMemo(
+    () => ({ personNode: PersonNode, connectorNode: ConnectorNode }),
+    []
+  );
 
   return (
     <ReactFlow
@@ -116,7 +149,7 @@ const Genogram = () => {
       edges={edges}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
-      // edgeTypes={edgeTypes}
+      edgeTypes={edgeTypes}
       nodeTypes={nodeTypes}
       fitView
     >

@@ -6,6 +6,7 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@tisoap/react-flow-smart-edge": "^3.0.0",
     "conditional-react-component": "^1.0.3",
     "elkjs": "^0.8.2",
     "lodash": "^4.17.21",
