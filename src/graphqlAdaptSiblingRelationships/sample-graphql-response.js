@@ -1,5 +1,19 @@
 export const sampleGraphqlHumanRelationshipResponse = [
   {
+    humanId1: "17",
+    humanId2: "18",
+    relationship: "parent-child",
+    emotionalRelationship: "estranged",
+    id: "r1",
+  },
+  {
+    humanId1: "2",
+    humanId2: "18",
+    relationship: "parent-child",
+    emotionalRelationship: "estranged",
+    id: "r1",
+  },
+  {
     humanId1: "0",
     humanId2: "1",
     relationship: "siblings",
@@ -128,6 +142,8 @@ export const sampleGraphqlHumanResponse = {
   14: { name: 14 },
   15: { name: 15 },
   16: { name: 16 },
+  17: { name: 17 },
+  18: { name: 18 },
 };
 
 export const sampleResponse = () => {};
