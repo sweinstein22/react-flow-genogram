@@ -141,7 +141,7 @@ const generateNodesAndEdges = ({
 
   // Generate Nodes and Edges for Partner Relationships
   Object.values(partnerRelationships).forEach(
-    ({ humanId1, humanId2, status }) => {
+    ({ humanId1, humanId2, relationship }) => {
       // Add nodes for both humans in case they haven't
       // been accounted for, addNode will skip anyone that
       // already exists
@@ -178,9 +178,7 @@ const generateNodesAndEdges = ({
           target: humanId2,
           sourceHandle: "partner",
           targetHandle: "partner",
-          type: "step",
-          // type: "customEdge",
-          data: { withChildren: true },
+          type: relationship === "divorced" ? "divorced" : "step",
         };
       }
     }

@@ -98,7 +98,7 @@ export const sampleGraphqlHumanRelationshipResponse = [
   {
     humanId1: "13",
     humanId2: "15",
-    relationship: "partners",
+    relationship: "divorced",
     id: "r14",
   },
   {

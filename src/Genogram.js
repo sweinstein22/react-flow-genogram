@@ -16,6 +16,8 @@ import sampleGraphqlNodesAndEdges from "./graphqlAdaptSiblingRelationships/calcu
 // Test data without trying to implement any sort of data parsing
 // import hardcodedNodesAndEdges from "./hardcodedNodesAndEdges/calculateNodesAndEdges";
 
+import DivorcedEdge from "./edges/DivorcedEdge";
+
 const elk = new ElkJS();
 
 const nodeWidth = 172;
@@ -107,7 +109,7 @@ const Genogram = () => {
     layoutElements();
   }, [setNodes, setEdges]);
 
-  // const edgeTypes = useMemo(() => ({customEdge: CustomEdge}), []);
+  const edgeTypes = useMemo(() => ({ divorced: DivorcedEdge }), []);
   const nodeTypes = useMemo(() => ({ personNode: PersonNode }), []);
 
   return (
@@ -116,7 +118,7 @@ const Genogram = () => {
       edges={edges}
       onNodesChange={onNodesChange}
       onEdgesChange={onEdgesChange}
-      // edgeTypes={edgeTypes}
+      edgeTypes={edgeTypes}
       nodeTypes={nodeTypes}
       fitView
     >
