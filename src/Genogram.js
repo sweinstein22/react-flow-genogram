@@ -7,37 +7,27 @@ import ReactFlow, {
   Controls,
 } from "reactflow";
 import Key from "./Key";
-import PersonNode from "./nodes/PersonNode";
 import "reactflow/dist/style.css";
-import processDynamicNodes from "./graphqlAdaptSiblingRelationships/processDynamicNodes";
 
 // Test data trying to leverage only one on one relationship information from the "database"
+import processDynamicNodes from "./graphqlAdaptSiblingRelationships/processDynamicNodes";
 import sampleGraphqlNodesAndEdges from "./graphqlAdaptSiblingRelationships/calculateNodesAndEdges";
 
 // Test data without trying to implement any sort of data parsing
 // import hardcodedNodesAndEdges from "./hardcodedNodesAndEdges/calculateNodesAndEdges";
 
+// Edges
 import DivorcedEdge from "./edges/DivorcedEdge";
+import PartnerConnectorEdge from "./edges/PartnerConnectorEdge";
+
+// Nodes
+import PersonNode from "./nodes/PersonNode";
+import ConnectorNode from "./nodes/ConnectorNode";
 
 const elk = new ElkJS();
 
 const nodeWidth = 172;
 const nodeHeight = 36;
-
-/** Generative way to build this stuff out
- *
- * Every marriage needs to have phantom child if not real one
- * Add marriage line after dynamic chart determination
- *
- * 1. Generate list of nodes & edges
- * 2. Dynamically generate graph
- * 3. Add in child free marriage lines, divorce lines, etc.
- *
- * TODO:
- * - determine data structure required to generate nodes & edges
- * - figure out how to determine what edges need to be added after dynamic generation
- * - figure out fictive kin structure/show & hide options?
- */
 
 const graph = {
   id: "root",
@@ -53,7 +43,7 @@ const graph = {
 const sampleNodesAndEdges = sampleGraphqlNodesAndEdges();
 // const sampleNodesAndEdges = hardcodedNodesAndEdges();
 
-const getLayoutedElements = async (nodes, edges) => {
+const getLayoutedElements = async (nodes, edges, postPositionProcessing) => {
   // Add attributes required by elkjs to nodes and edges
   graph.children = nodes.reduce(
     (memo, node) => [
@@ -84,11 +74,17 @@ const getLayoutedElements = async (nodes, edges) => {
     });
   });
 
-  return {
+  const result = postPositionProcessing({
     nodes: graph.children,
+    nodeHeight,
+    nodeWidth,
+  });
+
+  return {
+    nodes: result.nodes,
     // Add in edges that should be rendered but should not impact
     // dynamic positioning of nodes
-    edges: [...graph.edges, ...sampleNodesAndEdges.staticEdges],
+    edges: [...result.edges, ...sampleNodesAndEdges.staticEdges],
   };
 };
 
@@ -101,7 +97,8 @@ const Genogram = () => {
       const { nodes: layoutedNodes, edges: layoutedEdges } =
         await getLayoutedElements(
           sampleNodesAndEdges.nodes,
-          sampleNodesAndEdges.dynamicEdges
+          sampleNodesAndEdges.dynamicEdges,
+          processDynamicNodes
         );
       setNodes(layoutedNodes);
       setEdges(layoutedEdges);
@@ -110,8 +107,14 @@ const Genogram = () => {
     layoutElements();
   }, [setNodes, setEdges]);
 
-  const edgeTypes = useMemo(() => ({ divorced: DivorcedEdge }), []);
-  const nodeTypes = useMemo(() => ({ personNode: PersonNode }), []);
+  const edgeTypes = useMemo(
+    () => ({ divorced: DivorcedEdge, partnerConnector: PartnerConnectorEdge }),
+    []
+  );
+  const nodeTypes = useMemo(
+    () => ({ connectorNode: ConnectorNode, personNode: PersonNode }),
+    []
+  );
 
   return (
     <ReactFlow
