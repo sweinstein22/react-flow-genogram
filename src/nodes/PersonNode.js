@@ -49,8 +49,6 @@ const PersonNode = (props) => {
       <CustomHandle id="sibling" position={Position.Top} />
       <CustomHandle id="parent" position={Position.Bottom} />
       <CustomHandle id="partner" position={Position.Bottom} />
-      <CustomHandle id="partnerLeft" position={Position.Bottom} />
-      <CustomHandle id="partnerRight" position={Position.Bottom} />
       <FictiveKinHandle />
       <PersonCard {...props} />
     </Fragment>

@@ -210,7 +210,7 @@ const generateNodesAndEdges = ({
   return {
     nodes: Object.values(nodesById),
     dynamicEdges: Object.values(dynamicEdges),
-    staticEdges: [], // Object.values(staticEdges),
+    staticEdges: [], //Object.values(staticEdges),
   };
 };
 

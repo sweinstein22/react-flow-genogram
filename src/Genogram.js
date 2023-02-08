@@ -23,6 +23,7 @@ import PartnerConnectorEdge from "./edges/PartnerConnectorEdge";
 // Nodes
 import PersonNode from "./nodes/PersonNode";
 import ConnectorNode from "./nodes/ConnectorNode";
+import ChildEdge from "./edges/ChildEdge.js";
 
 const elk = new ElkJS();
 
@@ -35,7 +36,7 @@ const graph = {
   layoutOptions: {
     "elk.algorithm": "layered",
     "elk.direction": "DOWN",
-    "elk.layered.spacing.edgeNodeBetweenLayers": 30,
+    "elk.layered.spacing.edgeNodeBetweenLayers": 60,
     "elk.layered.nodePlacement.bk.fixedAlignment": "BALANCED",
   },
 };
@@ -108,7 +109,11 @@ const Genogram = () => {
   }, [setNodes, setEdges]);
 
   const edgeTypes = useMemo(
-    () => ({ divorced: DivorcedEdge, partnerConnector: PartnerConnectorEdge }),
+    () => ({
+      divorced: DivorcedEdge,
+      partnerConnector: PartnerConnectorEdge,
+      childEdge: ChildEdge,
+    }),
     []
   );
   const nodeTypes = useMemo(
