@@ -1,5 +1,12 @@
 const parseGraphqlData = (data) => {
-  const partnerRelationshipStatuses = ["married", "divorced", "partners"];
+  const partnerRelationshipStatuses = [
+    "married",
+    "divorced",
+    "partners",
+    "engaged",
+    "love-affair",
+  ];
+  const parentChildRelationshipStatuses = ["parent-child", "adoptive"];
   const parentChildRelationships = {};
   const childParentRelationships = {};
   const grandparentChildRelationships = {};
@@ -9,16 +16,16 @@ const parseGraphqlData = (data) => {
 
   data.forEach(({ humanId1, humanId2, relationship, ...rest }) => {
     // Parent Child Relationship
-    if (relationship === "parent-child") {
+    if (parentChildRelationshipStatuses.includes(relationship)) {
       const currentChildren = parentChildRelationships[humanId1] || [];
       parentChildRelationships[humanId1] = [
         ...currentChildren,
-        { parentId: humanId1, childId: humanId2, ...rest },
+        { parentId: humanId1, childId: humanId2, relationship, ...rest },
       ];
       const currentParents = childParentRelationships[humanId2] || [];
       childParentRelationships[humanId2] = [
         ...currentParents,
-        { parentId: humanId1, childId: humanId2, ...rest },
+        { parentId: humanId1, childId: humanId2, relationship, ...rest },
       ];
     }
     // Grandparent Child Relationships

@@ -9,7 +9,7 @@ export const sampleGraphqlHumanRelationshipResponse = [
   {
     humanId1: "1",
     humanId2: "2",
-    relationship: "partners",
+    relationship: "love-affair",
     status: "",
     id: "r1",
   },
@@ -119,7 +119,7 @@ export const sampleGraphqlHumanRelationshipResponse = [
   {
     humanId1: "6",
     humanId2: "9",
-    relationship: "partners",
+    relationship: "engaged",
     id: "r9",
   },
   {
@@ -172,15 +172,15 @@ export const sampleGraphqlHumanRelationshipResponse = [
   {
     humanId1: "20",
     humanId2: "8",
-    relationship: "parent-child",
-    status: "adoptive",
+    relationship: "adoptive",
+    status: "",
     id: "r16",
   },
   {
     humanId1: "21",
     humanId2: "8",
-    relationship: "parent-child",
-    status: "adoptive",
+    relationship: "adoptive",
+    status: "",
     id: "r16",
   },
   {

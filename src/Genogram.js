@@ -17,13 +17,12 @@ import sampleGraphqlNodesAndEdges from "./graphqlAdaptSiblingRelationships/calcu
 // import hardcodedNodesAndEdges from "./hardcodedNodesAndEdges/calculateNodesAndEdges";
 
 // Edges
-import DivorcedEdge from "./edges/DivorcedEdge";
 import PartnerConnectorEdge from "./edges/PartnerConnectorEdge";
+import ChildEdge from "./edges/ChildEdge.js";
 
 // Nodes
 import PersonNode from "./nodes/PersonNode";
 import ConnectorNode from "./nodes/ConnectorNode";
-import ChildEdge from "./edges/ChildEdge.js";
 
 const elk = new ElkJS();
 
@@ -109,11 +108,7 @@ const Genogram = () => {
   }, [setNodes, setEdges]);
 
   const edgeTypes = useMemo(
-    () => ({
-      divorced: DivorcedEdge,
-      partnerConnector: PartnerConnectorEdge,
-      childEdge: ChildEdge,
-    }),
+    () => ({ partnerConnector: PartnerConnectorEdge, childEdge: ChildEdge }),
     []
   );
   const nodeTypes = useMemo(

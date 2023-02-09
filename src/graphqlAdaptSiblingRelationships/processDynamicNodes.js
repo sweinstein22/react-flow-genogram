@@ -32,12 +32,8 @@ const processNodes = ({
     }
   };
 
-  const addPartnerEdge = ({
-    humanId1,
-    humanId2,
-    relationship,
-    partnerCounts,
-  }) => {
+  const addPartnerEdge = (props) => {
+    const { humanId1, humanId2, partnerCounts } = props;
     const human1NodePosition = filteredNodesById[humanId1].position;
     const human2NodePosition = filteredNodesById[humanId2].position;
     const partnerCount = partnerCounts[humanId1] + partnerCounts[humanId2];
@@ -83,7 +79,8 @@ const processNodes = ({
       target: connectorNodeId,
       sourceHandle: "partner",
       targetHandle: "connectorNodeLeft",
-      type: relationship === "divorced" ? "divorced" : "partnerConnector",
+      type: "partnerConnector",
+      data: props,
     };
     edgesById[`e${rightId}-${leftId}-connector`] = {
       id: `e${rightId}-${leftId}-connector`,
@@ -91,7 +88,8 @@ const processNodes = ({
       target: connectorNodeId,
       sourceHandle: "partner",
       targetHandle: "connectorNodeRight",
-      type: relationship === "divorced" ? "divorced" : "partnerConnector",
+      type: "partnerConnector",
+      data: props,
     };
   };
 
@@ -104,7 +102,7 @@ const processNodes = ({
       sourceHandle: "parent",
       targetHandle: "child",
       type: "childEdge",
-      data: { ...parent },
+      data: parent,
     };
   };
 
@@ -123,6 +121,7 @@ const processNodes = ({
         sourceHandle: "connectorNodeBottom",
         targetHandle: "child",
         type: "childEdge",
+        data: { ...parent1 },
       };
     } else {
       // Only add a line to the parent as a solo-entity if they aren't
@@ -154,10 +153,16 @@ const processNodes = ({
   // Partner Relationships
   const partnerCounts = {};
   Object.values(partnerRelationships).forEach(
-    ({ humanId1, humanId2, relationship }) => {
+    ({ humanId1, humanId2, relationship, ...rest }) => {
       partnerCounts[humanId1] = (partnerCounts[humanId1] || 0) + 1;
       partnerCounts[humanId2] = (partnerCounts[humanId2] || 0) + 1;
-      addPartnerEdge({ humanId1, humanId2, relationship, partnerCounts });
+      addPartnerEdge({
+        humanId1,
+        humanId2,
+        relationship,
+        partnerCounts,
+        ...rest,
+      });
     }
   );
 
