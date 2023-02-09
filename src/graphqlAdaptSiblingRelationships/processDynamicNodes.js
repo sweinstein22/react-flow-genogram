@@ -1,6 +1,7 @@
 import { sampleGraphqlHumanRelationshipResponse } from "./sample-graphql-response.js";
 import parseGraphqlData from "./parseGraphqlData.js";
 import addFictiveKinEdge from "../edgeUtils/addFictiveKinEdge.js";
+import { isEmpty } from "lodash";
 
 const processNodes = ({
   nodes,
@@ -45,7 +46,7 @@ const processNodes = ({
     let xOffset = Math.abs(human1NodePosition.x - human2NodePosition.x) / 2;
     // Shift the offset out further if the nodes are too close together
     // This happens in the grandparent as parent case
-    if (xOffset < 10) {
+    if (xOffset < nodeWidth / 2) {
       xOffset = xOffset + nodeWidth / 2;
     }
 
@@ -94,7 +95,8 @@ const processNodes = ({
     };
   };
 
-  const addSingleParentEdge = ({ parentId, childId }) => {
+  const addSingleParentEdge = (parent) => {
+    const { parentId, childId } = parent;
     edgesById[`e${parentId}-${childId}`] = {
       id: `e${parentId}-${childId}`,
       source: parentId,
@@ -102,10 +104,13 @@ const processNodes = ({
       sourceHandle: "parent",
       targetHandle: "child",
       type: "childEdge",
+      data: { ...parent },
     };
   };
 
-  const addCoParentEdges = ({ parentId1, parentId2, childId }) => {
+  const addCoParentEdges = ({ parent1, parent2, parents }) => {
+    const { parentId: parentId1, childId } = parent1;
+    const { parentId: parentId2 } = parent2;
     const connectorNode =
       connectorNodesById[`${parentId1}-${parentId2}-connector`] ||
       connectorNodesById[`${parentId2}-${parentId1}-connector`];
@@ -120,8 +125,29 @@ const processNodes = ({
         type: "childEdge",
       };
     } else {
-      addSingleParentEdge({ parentId: parentId1, childId });
-      addSingleParentEdge({ parentId: parentId2, childId });
+      // Only add a line to the parent as a solo-entity if they aren't
+      // already represented by another pairing
+      const otherParents = parents.filter(
+        ({ parentId }) => ![parentId1, parentId2].includes(parentId)
+      );
+      const partnerExistsForParent1 = otherParents.filter(
+        ({ parentId }) =>
+          partnerRelationships[`${parentId}-${parentId1}`] ||
+          partnerRelationships[`${parentId1}-${parentId}`]
+      );
+      const partnerExistsForParent2 = otherParents.filter(
+        ({ parentId }) =>
+          partnerRelationships[`${parentId}-${parentId2}`] ||
+          partnerRelationships[`${parentId2}-${parentId}`]
+      );
+
+      if (isEmpty(partnerExistsForParent1)) {
+        addSingleParentEdge(parent1);
+      }
+
+      if (isEmpty(partnerExistsForParent2)) {
+        addSingleParentEdge(parent2);
+      }
     }
   };
 
@@ -138,21 +164,17 @@ const processNodes = ({
   // Child Parent Relationships
   Object.values(childParentRelationships).forEach((parents) => {
     if (parents.length === 1) {
-      const { parentId, childId } = parents[0];
-      addSingleParentEdge({ parentId, childId });
+      addSingleParentEdge(parents[0]);
     } else {
-      for (let i = 0; i < parents.length - 1; i++) {
-        const { parentId: parentId1, childId } = parents[i];
-        const { parentId: parentId2 } = parents[i + 1];
-        addCoParentEdges({ parentId1, parentId2, childId });
-      }
-
-      // parents.forEach(({ parentId, childId }, index) => {
-      //   for (let i = index + 1; i < parents.length; i++) {
-      //     const { parentId: parentId2 } = parents[i];
-      //     addCoParentEdges({ parentId1: parentId, parentId2, childId });
-      //   }
-      // });
+      parents.forEach((parent1, index) => {
+        for (let i = index + 1; i < parents.length; i++) {
+          addCoParentEdges({
+            parent1,
+            parent2: parents[i],
+            parents,
+          });
+        }
+      });
     }
   });
 
