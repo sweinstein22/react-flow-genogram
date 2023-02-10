@@ -18,7 +18,6 @@ const generateNodesAndEdges = ({
 }) => {
   const nodesById = {};
   const dynamicEdges = {};
-  const staticEdges = {};
 
   const addNode = ({ id, hidden }) => {
     if (!nodesById[id]) {
@@ -52,7 +51,6 @@ const generateNodesAndEdges = ({
     const edgeId = `e${humanId1}-${humanId2}`;
     const phantomIdLabel = phantomParent ? "parentId" : "childId";
     const existingIdLabel = phantomParent ? "childId" : "parentId";
-    const edgeRelationship = phantomParent ? "sibling" : "partner";
 
     addNode({ id: phantomNodeId, hidden: true });
     addParentChildEdge({
@@ -65,15 +63,6 @@ const generateNodesAndEdges = ({
       [phantomIdLabel]: phantomNodeId,
       [existingIdLabel]: humanId2,
     });
-
-    staticEdges[edgeId] = {
-      id: edgeId,
-      source: humanId1,
-      target: humanId2,
-      sourceHandle: edgeRelationship,
-      targetHandle: edgeRelationship,
-      type: "step",
-    };
   };
 
   const addPhantomCrossGenerationRelationship = ({ humanId1, humanId2 }) => {
@@ -91,15 +80,6 @@ const generateNodesAndEdges = ({
       parentId: phantomNodeId,
       childId: humanId2,
     });
-
-    staticEdges[edgeId] = {
-      id: edgeId,
-      source: humanId1,
-      target: humanId2,
-      sourceHandle: "parent",
-      targetHandle: "child",
-      type: "step",
-    };
   };
 
   // Generate Nodes and Edges for Parent/Child Relationships
@@ -156,20 +136,9 @@ const generateNodesAndEdges = ({
         )
       );
 
-      // Add phantom child and add partner edge between the two
-      // humans as a static node
+      // Add phantom child between the two partners
       if (childFreeAdult || noSharedChildren) {
         addPhantomSameGenerationRelationship({ humanId1, humanId2 });
-
-        const edgeId = `e${humanId1}-${humanId2}`;
-        staticEdges[edgeId] = {
-          id: edgeId,
-          source: humanId1,
-          target: humanId2,
-          sourceHandle: "partner",
-          targetHandle: "partner",
-          type: relationship === "divorced" ? "divorced" : "step",
-        };
       }
     }
   );
@@ -210,7 +179,7 @@ const generateNodesAndEdges = ({
   return {
     nodes: Object.values(nodesById),
     dynamicEdges: Object.values(dynamicEdges),
-    staticEdges: [], //Object.values(staticEdges),
+    staticEdges: [],
   };
 };
 
