@@ -5,6 +5,7 @@ const parseGraphqlData = (data) => {
     "partners",
     "engaged",
     "love-affair",
+    "cohabitating",
   ];
   const parentChildRelationshipStatuses = ["parent-child", "adoptive"];
   const parentChildRelationships = {};

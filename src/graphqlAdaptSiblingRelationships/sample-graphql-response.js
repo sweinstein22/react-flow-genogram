@@ -23,14 +23,14 @@ export const sampleGraphqlHumanRelationshipResponse = [
   {
     humanId1: "2",
     humanId2: "17",
-    relationship: "married",
+    relationship: "cohabitating",
     status: "",
     id: "r1",
   },
   {
     humanId1: "4",
     humanId2: "17",
-    relationship: "married",
+    relationship: "cohabitating",
     status: "",
     id: "r1",
   },

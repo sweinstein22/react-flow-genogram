@@ -18,9 +18,11 @@ const Key = () => {
             <button onClick={() => setShowPanel(false)}>X</button>
           </div>
           <ul>
-            <li>Deceased: </li>
-            <li>Divorced: </li>
-            <li>Positive Relationship: </li>
+            <li>Cohabitating: ⌂</li>
+            <li>Engaged: ⚬</li>
+            <li>Divorced: / /</li>
+            <li>Love Affair: ♥</li>
+            <li>Married: ⚭</li>
           </ul>
         </div>
       </If>

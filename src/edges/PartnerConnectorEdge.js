@@ -21,23 +21,27 @@ const PartnerConnectorEdge = ({
   });
 
   const relationshipMap = {
+    cohabitating: {
+      style: { strokeDasharray: "5,5", stroke: "blue" },
+      symbolStyle: { fill: "blue" },
+      symbol: "⌂",
+    },
     divorced: {
       style: { stroke: "red" },
-      symbolStyle: { stroke: "red", baselineShift: "sub" },
+      symbolStyle: { stroke: "red" },
       symbol: "/ /",
     },
     engaged: {
       style: { strokeDasharray: "5,5", stroke: "blue" },
+      symbolStyle: { fill: "blue" },
+      symbol: "⚬",
     },
     "love-affair": {
       style: { strokeDasharray: "5,5", stroke: "hotpink" },
-      symbolStyle: {
-        stroke: "hotpink",
-        fill: "hotpink",
-        baselineShift: "-30%",
-      },
+      symbolStyle: { stroke: "hotpink", fill: "hotpink" },
       symbol: "♥",
     },
+    married: { symbol: "⚭" },
   };
 
   const { style, symbolStyle, symbol } =
@@ -52,7 +56,7 @@ const PartnerConnectorEdge = ({
         markerEnd={markerEnd}
       />
       {addIcon && (
-        <text style={symbolStyle}>
+        <text style={{ ...symbolStyle, baselineShift: "-30%" }}>
           <textPath href={`#${id}`} startOffset="90%" textAnchor="center">
             {symbol}
           </textPath>
