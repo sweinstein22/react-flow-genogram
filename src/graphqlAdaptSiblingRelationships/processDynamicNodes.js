@@ -80,7 +80,7 @@ const processNodes = ({
       sourceHandle: "partner",
       targetHandle: "connectorNodeLeft",
       type: "partnerConnector",
-      data: props,
+      data: { ...props, targetHandle: "connectorNodeLeft" },
     };
     edgesById[`e${rightId}-${leftId}-connector`] = {
       id: `e${rightId}-${leftId}-connector`,
@@ -89,7 +89,7 @@ const processNodes = ({
       sourceHandle: "partner",
       targetHandle: "connectorNodeRight",
       type: "partnerConnector",
-      data: props,
+      data: { ...props, targetHandle: "connectorNodeRight" },
     };
   };
 

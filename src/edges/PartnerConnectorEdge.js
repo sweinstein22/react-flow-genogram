@@ -11,6 +11,7 @@ const PartnerConnectorEdge = ({
   ...props
 }) => {
   const sourceRightOfTarget = sourceX > targetX;
+  const addIcon = data?.targetHandle === "connectorNodeLeft";
   const [edgePath] = getSmoothStepPath({
     borderRadius: 0,
     sourceY: sourceY - 10,
@@ -19,33 +20,44 @@ const PartnerConnectorEdge = ({
     ...props,
   });
 
-  const relationshipStyleMap = {
-    divorced: { stroke: "red" },
-    engaged: { strokeDasharray: "5,5", stroke: "blue" },
-    "love-affair": { strokeDasharray: "5,5", stroke: "hotpink" },
+  const relationshipMap = {
+    divorced: {
+      style: { stroke: "red" },
+      symbolStyle: { stroke: "red", baselineShift: "sub" },
+      symbol: "/ /",
+    },
+    engaged: {
+      style: { strokeDasharray: "5,5", stroke: "blue" },
+    },
+    "love-affair": {
+      style: { strokeDasharray: "5,5", stroke: "hotpink" },
+      symbolStyle: {
+        stroke: "hotpink",
+        fill: "hotpink",
+        baselineShift: "-30%",
+      },
+      symbol: "♥",
+    },
   };
 
-  const baselineShift = sourceRightOfTarget ? undefined : "sub";
-  const relationshipSymbolMap = {
-    divorced: (
-      <text style={{ stroke: "red", baselineShift }}>
-        <textPath href={`#${id}`} startOffset="90%" textAnchor="center">
-          /
-        </textPath>
-      </text>
-    ),
-  };
-
+  const { style, symbolStyle, symbol } =
+    relationshipMap[data?.relationship] || {};
   return (
     <>
       <path
         id={id}
         className="react-flow__edge-path"
-        style={relationshipStyleMap[data?.relationship]}
+        style={style}
         d={edgePath}
         markerEnd={markerEnd}
       />
-      {relationshipSymbolMap[data?.relationship]}
+      {addIcon && (
+        <text style={symbolStyle}>
+          <textPath href={`#${id}`} startOffset="90%" textAnchor="center">
+            {symbol}
+          </textPath>
+        </text>
+      )}
     </>
   );
 };
