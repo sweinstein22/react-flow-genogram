@@ -49,6 +49,7 @@ const PersonNode = (props) => {
       <CustomHandle id="sibling" position={Position.Top} />
       <CustomHandle id="parent" position={Position.Bottom} />
       <CustomHandle id="partner" position={Position.Bottom} />
+      <CustomHandle id="emotionalRelationship" position={Position.Bottom} />
       <FictiveKinHandle />
       <PersonCard {...props} />
     </Fragment>

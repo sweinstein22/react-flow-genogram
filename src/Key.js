@@ -19,7 +19,9 @@ const Key = () => {
           </div>
           <ul>
             <li>Cohabitating: ⌂</li>
+            <li>Close: =</li>
             <li>Engaged: ⚬</li>
+            <li>Estranged: | |</li>
             <li>Divorced: / /</li>
             <li>Love Affair: ♥</li>
             <li>Married: ⚭</li>

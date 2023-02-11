@@ -15,9 +15,11 @@ const generateNodesAndEdges = ({
   partnerRelationships,
   siblingRelationships,
   fictiveKinRelationships,
+  emotionalRelationships,
 }) => {
   const nodesById = {};
   const dynamicEdges = {};
+  const emotionalRelationshipEdges = {};
 
   const addNode = ({ id, hidden }) => {
     if (!nodesById[id]) {
@@ -176,10 +178,26 @@ const generateNodesAndEdges = ({
     }
   );
 
+  // Generate Edges for Emotional Relationships
+  Object.values(emotionalRelationships).forEach(
+    ({ humanId1, humanId2, status }) => {
+      const edgeId = `${humanId1}-${humanId2}-emotional`;
+      emotionalRelationshipEdges[edgeId] = {
+        id: edgeId,
+        source: humanId1,
+        target: humanId2,
+        sourceHandle: "emotionalRelationship",
+        targetHandle: "emotionalRelationship",
+        data: { status },
+        type: "floating",
+      };
+    }
+  );
+
   return {
     nodes: Object.values(nodesById),
     dynamicEdges: Object.values(dynamicEdges),
-    staticEdges: [],
+    staticEdges: Object.values(emotionalRelationshipEdges),
   };
 };
 

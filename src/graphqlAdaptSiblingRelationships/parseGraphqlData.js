@@ -14,19 +14,32 @@ const parseGraphqlData = (data) => {
   const partnerRelationships = {};
   const siblingRelationships = {};
   const fictiveKinRelationships = {};
+  const emotionalRelationships = {};
 
-  data.forEach(({ humanId1, humanId2, relationship, ...rest }) => {
+  data.forEach(({ humanId1, humanId2, relationship, status, ...rest }) => {
     // Parent Child Relationship
     if (parentChildRelationshipStatuses.includes(relationship)) {
       const currentChildren = parentChildRelationships[humanId1] || [];
       parentChildRelationships[humanId1] = [
         ...currentChildren,
-        { parentId: humanId1, childId: humanId2, relationship, ...rest },
+        {
+          parentId: humanId1,
+          childId: humanId2,
+          relationship,
+          status,
+          ...rest,
+        },
       ];
       const currentParents = childParentRelationships[humanId2] || [];
       childParentRelationships[humanId2] = [
         ...currentParents,
-        { parentId: humanId1, childId: humanId2, relationship, ...rest },
+        {
+          parentId: humanId1,
+          childId: humanId2,
+          relationship,
+          status,
+          ...rest,
+        },
       ];
     }
     // Grandparent Child Relationships
@@ -34,12 +47,12 @@ const parseGraphqlData = (data) => {
       const currentChildren = grandparentChildRelationships[humanId1] || [];
       grandparentChildRelationships[humanId1] = [
         ...currentChildren,
-        { grandparentId: humanId1, childId: humanId2, ...rest },
+        { grandparentId: humanId1, childId: humanId2, status, ...rest },
       ];
       const currentParents = childParentRelationships[humanId2] || [];
       childParentRelationships[humanId2] = [
         ...currentParents,
-        { parentId: humanId1, childId: humanId2, ...rest },
+        { parentId: humanId1, childId: humanId2, status, ...rest },
       ];
     }
     // Partner Relationship
@@ -56,6 +69,7 @@ const parseGraphqlData = (data) => {
           humanId1,
           humanId2,
           relationship,
+          status,
           ...rest,
         };
       }
@@ -74,6 +88,7 @@ const parseGraphqlData = (data) => {
           humanId1,
           humanId2,
           relationship,
+          status,
           ...rest,
         };
       }
@@ -92,9 +107,19 @@ const parseGraphqlData = (data) => {
           humanId1,
           humanId2,
           relationship,
+          status,
           ...rest,
         };
       }
+    }
+
+    // Emotional Relationship
+    if (status) {
+      emotionalRelationships[`${humanId1}-${humanId2}`] = {
+        humanId1,
+        humanId2,
+        status,
+      };
     }
   });
 
@@ -105,6 +130,7 @@ const parseGraphqlData = (data) => {
     partnerRelationships,
     siblingRelationships,
     fictiveKinRelationships,
+    emotionalRelationships,
   };
 };
 

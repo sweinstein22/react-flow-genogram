@@ -3,14 +3,14 @@ export const sampleGraphqlHumanRelationshipResponse = [
     humanId1: "1",
     humanId2: "5",
     relationship: "grandparent-child",
-    status: "",
+    status: "hostile",
     id: "r1",
   },
   {
     humanId1: "1",
     humanId2: "2",
     relationship: "love-affair",
-    status: "",
+    status: "estranged",
     id: "r1",
   },
   {
@@ -52,7 +52,7 @@ export const sampleGraphqlHumanRelationshipResponse = [
     humanId1: "0",
     humanId2: "1",
     relationship: "siblings",
-    status: "",
+    status: "close",
     id: "r0",
   },
   {

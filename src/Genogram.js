@@ -18,7 +18,8 @@ import sampleGraphqlNodesAndEdges from "./graphqlAdaptSiblingRelationships/calcu
 
 // Edges
 import PartnerConnectorEdge from "./edges/PartnerConnectorEdge";
-import ChildEdge from "./edges/ChildEdge.js";
+import ChildEdge from "./edges/ChildEdge";
+import FloatingEdge from "./edges/FloatingEdge";
 
 // Nodes
 import PersonNode from "./nodes/PersonNode";
@@ -108,7 +109,11 @@ const Genogram = () => {
   }, [setNodes, setEdges]);
 
   const edgeTypes = useMemo(
-    () => ({ partnerConnector: PartnerConnectorEdge, childEdge: ChildEdge }),
+    () => ({
+      childEdge: ChildEdge,
+      floating: FloatingEdge,
+      partnerConnector: PartnerConnectorEdge,
+    }),
     []
   );
   const nodeTypes = useMemo(

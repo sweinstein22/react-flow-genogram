@@ -1,5 +1,6 @@
 import React from "react";
 import { getSmoothStepPath } from "reactflow";
+import { relationshipMap } from "./styleMaps";
 
 const PartnerConnectorEdge = ({
   id,
@@ -19,30 +20,6 @@ const PartnerConnectorEdge = ({
     targetX: targetX + (sourceRightOfTarget ? -5 : 5),
     ...props,
   });
-
-  const relationshipMap = {
-    cohabitating: {
-      style: { strokeDasharray: "5,5", stroke: "blue" },
-      symbolStyle: { fill: "blue" },
-      symbol: "⌂",
-    },
-    divorced: {
-      style: { stroke: "red" },
-      symbolStyle: { stroke: "red" },
-      symbol: "/ /",
-    },
-    engaged: {
-      style: { strokeDasharray: "5,5", stroke: "blue" },
-      symbolStyle: { fill: "blue" },
-      symbol: "⚬",
-    },
-    "love-affair": {
-      style: { strokeDasharray: "5,5", stroke: "hotpink" },
-      symbolStyle: { stroke: "hotpink", fill: "hotpink" },
-      symbol: "♥",
-    },
-    married: { symbol: "⚭" },
-  };
 
   const { style, symbolStyle, symbol } =
     relationshipMap[data?.relationship] || {};
