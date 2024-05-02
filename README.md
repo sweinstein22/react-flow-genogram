@@ -1,5 +1,7 @@
 # React Flow based Genogram Proof of Concept
 
+![image](https://github.com/sweinstein22/react-flow-genogram/assets/21115276/88088c88-f16d-4c1e-90d8-bed5be609d1f)
+
 ## dependencies:
 - [reactflow](https://reactflow.dev/)
 - [elkjs](https://github.com/kieler/elkjs)
